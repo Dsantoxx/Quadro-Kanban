@@ -1,42 +1,64 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quadro Kanban</title>
-<link rel="stylesheet" href="css/estilo.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quadro Kanban</title>
+  <link rel="stylesheet" href="css/estilo.css">
 </head>
 
 <body>
 
-<h1>Quadro Kanban</h1>
+  <header>
+    <h1>📋 Quadro Kanban</h1>
+    <p>Duplo clique para editar · Arraste para mover · X para excluir</p>
+  </header>
 
-<div class="kanban">
+  <main class="kanban">
 
-    <!-- COLUNA A FAZER -->
-    <div class="column" data-column="todo">
+    <!-- COLUNA: A FAZER -->
+    <div class="column todo" id="col-todo">
+      <div class="column-header">
         <h2>A Fazer</h2>
-        <div class="cards" id="todo"></div>
-
-        <button onclick="criarCard('todo')">+ Novo Card</button>
+        <span class="contador" id="cnt-todo">0</span>
+      </div>
+      <div class="cards" id="todo"></div>
+      <button class="btn-novo" onclick="criarCard('todo')">+ Novo Card</button>
     </div>
 
-
-    <!-- COLUNA FAZENDO -->
-    <div class="column" data-column="doing">
+    <!-- COLUNA: FAZENDO -->
+    <div class="column doing" id="col-doing">
+      <div class="column-header">
         <h2>Fazendo</h2>
-        <div class="cards" id="doing"></div>
+        <span class="contador" id="cnt-doing">0</span>
+      </div>
+      <div class="cards" id="doing"></div>
+      <button class="btn-novo" onclick="criarCard('doing')">+ Novo Card</button>
     </div>
 
-
-    <!-- COLUNA CONCLUÍDO -->
-    <div class="column" data-column="done">
+    <!-- COLUNA: CONCLUÍDO -->
+    <div class="column done" id="col-done">
+      <div class="column-header">
         <h2>Concluído</h2>
-        <div class="cards" id="done"></div>
+        <span class="contador" id="cnt-done">0</span>
+      </div>
+      <div class="cards" id="done"></div>
+      <button class="btn-novo" onclick="criarCard('done')">+ Novo Card</button>
     </div>
 
-</div>
+  </main>
 
-<script src="js/script.js"></script>
+  <!-- MODAL DE CONFIRMAÇÃO DE EXCLUSÃO -->
+  <div id="modalExcluir" class="modal">
+    <div class="modal-content">
+      <p>Deseja excluir este card?</p>
+      <button class="btn-confirmar" id="confirmarExcluir">Excluir</button>
+      <button class="btn-cancelar" id="cancelarExcluir">Cancelar</button>
+    </div>
+  </div>
+
+  <script src="js/script.js"></script>
+
 </body>
 </html>

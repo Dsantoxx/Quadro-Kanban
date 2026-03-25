@@ -1,92 +1,265 @@
-body{
-    font-family: Arial;
-    margin:0;
-    background:#f4f4f4;
+/* ============================================================
+   RESET E CONFIGURAÇÕES GLOBAIS
+   ============================================================ */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-h1{
-    text-align:center;
-    padding:20px;
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #0f0f0f;
+  color: #f0f0f0;
+  min-height: 100vh;
 }
 
-/* quadro kanban */
-.kanban{
-    display:grid;
-    grid-template-columns: repeat(3,1fr);
-    gap:20px;
-    padding:20px;
+/* ============================================================
+   CABEÇALHO
+   ============================================================ */
+header {
+  text-align: center;
+  padding: 30px 20px 10px;
 }
 
-/* coluna */
-.column{
-    background:white;
-    border-radius:8px;
-    padding:15px;
-    display:flex;
-    flex-direction:column;
+header h1 {
+  font-size: 2rem;
+  letter-spacing: 2px;
+  color: #f0f0f0;
 }
 
-.column h2{
-    text-align:center;
+header p {
+  color: #888;
+  font-size: 0.85rem;
+  margin-top: 6px;
 }
 
-/* área dos cards */
-.cards{
-    flex:1;
-    min-height:200px;
+/* ============================================================
+   LAYOUT DO QUADRO KANBAN — CSS Grid com 3 colunas iguais
+   ============================================================ */
+.kanban {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  padding: 30px 20px;
+  max-width: 1100px;
+  margin: 0 auto;
 }
 
-/* card */
-.card{
-    background:#e3e3e3;
-    padding:10px;
-    border-radius:6px;
-    margin-bottom:10px;
-    cursor:grab;
+/* ============================================================
+   COLUNAS
+   ============================================================ */
+.column {
+  background: #1a1a1a;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  min-height: 420px;
+  transition: background 0.2s;
 }
 
-/* botão */
-button{
-    margin-top:10px;
-    padding:8px;
-    border:none;
-    background:#007bff;
-    color:white;
-    border-radius:4px;
-    cursor:pointer;
+/* Destaque visual quando um card está sendo arrastado sobre a coluna */
+.column.drag-over {
+  background: #252525;
+  outline: 2px dashed #555;
 }
 
-/* responsivo */
-@media(max-width:768px){
+/* Cores de destaque no topo de cada coluna */
+.todo  { border-top: 5px solid #3b82f6; }
+.doing { border-top: 5px solid #facc15; }
+.done  { border-top: 5px solid #22c55e; }
 
-    .kanban{
-        grid-template-columns:1fr;
-    }
-
+/* Cabeçalho da coluna com título e contador */
+.column-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
 }
 
-/* RESPONSIVO PARA CELULAR */
-@media (max-width: 768px){
-
-    .kanban{
-        grid-template-columns: 1fr;
-    }
-
-    .column{
-        margin-bottom:20px;
-    }
-
-    button{
-        width:100%;
-    }
-
+.column-header h2 {
+  font-size: 1rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
 }
 
-.card{
-    background:#e3e3e3;
-    padding:12px;
-    border-radius:6px;
-    margin-bottom:10px;
-    cursor:grab;
-    font-size:16px;
+/* Badge com a quantidade de cards */
+.contador {
+  background: #2e2e2e;
+  color: #aaa;
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+
+/* ============================================================
+   ÁREA DE CARDS
+   ============================================================ */
+.cards {
+  flex: 1;
+  min-height: 150px;
+}
+
+/* ============================================================
+   CARDS INDIVIDUAIS
+   ============================================================ */
+.card {
+  background: #2a2a2a;
+  border: 1px solid #333;
+  padding: 10px 36px 10px 12px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  cursor: grab;
+  position: relative;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+}
+
+/* Estilo quando o card está sendo arrastado */
+.card.arrastando {
+  opacity: 0.4;
+  cursor: grabbing;
+}
+
+/* Estilo do card em modo de edição */
+.card.editando {
+  border-color: #3b82f6;
+  background: #1f2d3d;
+}
+
+/* ============================================================
+   TEXTO EDITÁVEL DO CARD
+   ============================================================ */
+.texto {
+  outline: none;
+  background: transparent;
+  color: #f0f0f0;
+  font-size: 14px;
+  line-height: 1.5;
+  width: 100%;
+  word-break: break-word;
+  min-height: 20px;
+  display: block;
+}
+
+/* ============================================================
+   BOTÃO DE EXCLUIR (X)
+   ============================================================ */
+.delete {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: transparent;
+  color: #666;
+  border: none;
+  border-radius: 4px;
+  width: 22px;
+  height: 22px;
+  font-size: 14px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.delete:hover {
+  background: #ff4d4d;
+  color: white;
+}
+
+/* ============================================================
+   BOTÃO "NOVO CARD"
+   ============================================================ */
+.btn-novo {
+  margin-top: 12px;
+  padding: 8px;
+  border: 1px dashed #444;
+  background: transparent;
+  color: #888;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  width: 100%;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+
+.btn-novo:hover {
+  border-color: #3b82f6;
+  color: #3b82f6;
+  background: #1a2433;
+}
+
+/* ============================================================
+   MODAL DE EXCLUSÃO
+   ============================================================ */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal.ativo {
+  display: flex;
+}
+
+.modal-content {
+  background: #1e1e1e;
+  border: 1px solid #333;
+  padding: 28px 32px;
+  border-radius: 12px;
+  text-align: center;
+  max-width: 320px;
+  width: 90%;
+}
+
+.modal-content p {
+  margin-bottom: 20px;
+  color: #ccc;
+}
+
+.btn-confirmar {
+  padding: 8px 20px;
+  background: #ff4d4d;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-right: 10px;
+  transition: background 0.2s;
+}
+
+.btn-confirmar:hover { background: #e03333; }
+
+.btn-cancelar {
+  padding: 8px 20px;
+  background: #2e2e2e;
+  color: #ccc;
+  border: 1px solid #444;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-cancelar:hover { background: #3a3a3a; }
+
+/* ============================================================
+   RESPONSIVIDADE — CSS Grid adaptável para mobile
+   ============================================================ */
+@media (max-width: 900px) {
+  .kanban { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  header h1 { font-size: 1.4rem; }
 }
