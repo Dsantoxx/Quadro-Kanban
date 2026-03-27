@@ -47,8 +47,9 @@ function criarCard(colunaId) {
   card.appendChild(botaoExcluir);
   card.appendChild(texto);
 
-  // Registra eventos de drag-and-drop
+  // Registra eventos de drag-and-drop (desktop) e toque (mobile)
   registrarDragEventos(card);
+  registrarTouchEventos(card);
 
   // Insere na coluna correta
   document.getElementById(colunaId).appendChild(card);
@@ -95,7 +96,7 @@ function desativarEdicao(card, texto) {
 
 // ============================================================
 // FUNÇÃO: registrarDragEventos
-// Adiciona dragstart e dragend ao card
+// Adiciona dragstart e dragend ao card (desktop)
 // ============================================================
 function registrarDragEventos(card) {
   card.addEventListener("dragstart", function () {
@@ -106,6 +107,80 @@ function registrarDragEventos(card) {
     card.classList.remove("arrastando");
     cardAtual = null;
   });
+}
+
+// ============================================================
+// FUNÇÃO: registrarTouchEventos
+// Suporte a toque (mobile) — funciona em paralelo com o drag
+// ============================================================
+function registrarTouchEventos(card) {
+  let clone = null;
+  let colunaOrigem = null;
+
+  card.addEventListener("touchstart", function (e) {
+    if (card.classList.contains("editando")) return;
+
+    colunaOrigem = card.parentElement;
+    cardAtual = card;
+
+    // Cria um clone visual que segue o dedo
+    clone = card.cloneNode(true);
+    clone.style.position = "fixed";
+    clone.style.opacity = "0.75";
+    clone.style.pointerEvents = "none";
+    clone.style.zIndex = "9999";
+    clone.style.width = card.offsetWidth + "px";
+    clone.style.transform = "scale(1.05)";
+    document.body.appendChild(clone);
+
+    card.style.opacity = "0.3";
+
+    moverClone(e.touches[0]);
+  }, { passive: true });
+
+  card.addEventListener("touchmove", function (e) {
+    if (!clone) return;
+    e.preventDefault(); // impede scroll da página durante o arrasto
+    moverClone(e.touches[0]);
+
+    // Descobre qual coluna está sob o dedo
+    clone.style.display = "none";
+    const el = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY);
+    clone.style.display = "";
+
+    document.querySelectorAll(".column").forEach(col => col.classList.remove("drag-over"));
+    const coluna = el ? el.closest(".column") : null;
+    if (coluna) coluna.classList.add("drag-over");
+
+  }, { passive: false });
+
+  card.addEventListener("touchend", function (e) {
+    if (!clone) return;
+
+    clone.remove();
+    clone = null;
+    card.style.opacity = "";
+
+    document.querySelectorAll(".column").forEach(col => col.classList.remove("drag-over"));
+
+    // Descobre onde o dedo foi solto
+    const touch = e.changedTouches[0];
+    const el = document.elementFromPoint(touch.clientX, touch.clientY);
+    const coluna = el ? el.closest(".cards") : null;
+
+    if (coluna && coluna !== colunaOrigem) {
+      coluna.appendChild(card);
+      atualizarContadores();
+    }
+
+    cardAtual = null;
+    colunaOrigem = null;
+  });
+
+  function moverClone(touch) {
+    clone.style.left = (touch.clientX - clone.offsetWidth / 2) + "px";
+    clone.style.top  = (touch.clientY - clone.offsetHeight / 2) + "px";
+  }
 }
 
 // ============================================================
